@@ -10,16 +10,23 @@ const {
     Renderer,
 } = Vex.Flow;
 
-export default class Notes extends Component {
+export default class Note extends Component {
     render() {
-        return <div ref="outer" style={{
+        return <div ref={"outer"} style={{
             padding: 10,
             borderRadius: 10,
             display: "inline-block",
         }}>
         </div>;
     }
-    componentDidMount() {
+    componentDidUpdate() {
+        const parent = this.refs["outer"]
+        if ( parent){
+            while (parent.firstChild) {
+                parent.firstChild.remove()
+            }
+        }
+        
         const {chord} = this.props;
 
         const svgContainer = document.createElement('div');
@@ -43,6 +50,6 @@ export default class Notes extends Component {
         svgContainer.style.position = "relative";
         svgContainer.style.display = "inlineBlock";
 
-        this.refs.outer.appendChild(svgContainer);
+        this.refs["outer"].appendChild(svgContainer);
     }
 }

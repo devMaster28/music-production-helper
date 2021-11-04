@@ -5,7 +5,7 @@ const path = require('path')
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        width: 800,
+        width: 1200,
         height: 660,
         resizable: false,
         maximizable: false,
@@ -20,7 +20,7 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:3000')
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished

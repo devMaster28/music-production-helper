@@ -1,23 +1,22 @@
 # Electron React App
 
-Proyecto realizado por Alejandro García Vacas
+## Instalació
 
-Basado en el componenete de React [Electron.js](electronjs.org)
+# 1- instalar node
 
-## Inciar servidor
+https://nodejs.org/es/download/
 
-En el direcctorio del proyecto, puedes arrancarlo:
+comprobar que estigui instalat: `npm -v`
 
+# 2- instalar dependencies del projecte
 
-### `npm run react-electron`
+anar a aquesta carpeta i cridar la seguent comanda amb el terminal
+(es podran veure instalades dintre de la carpeta node_modules)
 
-Cuando es programa este corriendo nos mostara nuestra ventana Electron el nuestro escritorio\
-Ademas podremos ver nuestro icono de aplicacion el la barra de navegación\
+`npm -i `
 
-## Documentacion
+# 3- Inciar el projecte
 
-Podemos encontrar documentacion sobre el componente Electon en su página web.
+En el direcctori del projecte, per visualitzar-ho pots fer el següent.
 
-### BrowserWindow
-[Documentacion Electron](https://www.electronjs.org/docs/api/browser-window)
-
+### `npm run electron-react `

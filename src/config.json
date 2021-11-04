@@ -1,0 +1,40 @@
+{
+    "genders": [
+        {
+            "name":"Pop",
+            "tempo":100,
+            "stucture":[
+                {
+                    "nomDeLaEstructura":"", 
+                    "detail":[
+                        "Intro "," Estrofa ", "Tornada", "Estrofa" ,"Tornada" , "Pont" , "Tornada" , "Tornada" , "Final" 
+                    ]
+                }
+                
+            ],
+            "harmony":[
+                {
+                    "parts":[
+                        "I","IV","V","VI"
+                    ]
+                },
+                {
+                    "parts":[
+                        "I","V","VI","IV"
+                    ]
+                },
+                {
+                    "parts":[
+                        "VI","IV","I","V"
+                    ]
+                },
+                {
+                    "parts":[
+                        "IV","I","V","VI"
+                    ]
+                }
+            ]
+        }
+        
+    ]
+}
