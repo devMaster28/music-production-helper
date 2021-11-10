@@ -20,7 +20,8 @@ const onPlay = (harmony)=> {
         "C5": "mp3Notes/c5.mp3",
     }).toDestination();
 
-    
+    Tone.Transport.bpm.value = 200
+
     Tone.loaded().then(() => {
         const now = Tone.now()
         harmony.map((chord, i) => {
@@ -28,10 +29,10 @@ const onPlay = (harmony)=> {
             console.log(harmony)
             switch (chord){
                 case "I":
-                    sampler.triggerAttack(["C4", "E4", "G4"], now +i)
+                    sampler.triggerAttack(["C4", "E4", "G4"], now +i/2)
                     break;
                 case "IV":
-                    sampler.triggerAttack(["C4", "F4", "G4"], now +i)
+                    sampler.triggerAttack(["C4", "F4", "G4"], now +i/2)
 
                     break
                 case "V":
@@ -39,10 +40,10 @@ const onPlay = (harmony)=> {
 
                     break
                 case "VI":
-                    sampler.triggerAttack(["C4", "E4","A4"], now+i)
+                    sampler.triggerAttack(["C4", "E4","A4"], now+i/2)
                     break
                 default:
-                    sampler.triggerAttack(["C5"], now +i)
+                    sampler.triggerAttack(["C5"], now +i/2)
 
             }      
             
@@ -66,36 +67,38 @@ export default class StructureDetail extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            selectedIndex:0
+            selectedIndex:0,
+            selectedRhythm:0
         }
         
     }
-    createNotes(acord){
+    createNotes(acord, rhythm){
         const VF = Vex.Flow;
 
         const {Accidental, StaveNote} = Vex.Flow;
         var notes = [
           ];
-          console.log(acord)
+          console.log(rhythm)
+        rhythm.map( element => {
 
-        switch (acord){
-            case "I":
-                notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: "q" }))
-                break;
-            case "IV":
-                notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "f/4", "a/4"], duration: "q" }))
-                break
-            case "V":
-                notes.push(new VF.StaveNote({clef: "treble", keys: ["b/3", "e/4", "g/4"], duration: "q" }))
-                break
-            case "VI":
-                notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "a/4"], duration: "q" }))
-                break
-            default:
-                notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: "q" }))
-        }      
-          
-        
+            switch (acord){
+                case "I":
+                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
+                    break;
+                case "IV":
+                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "f/4", "a/4"], duration: element }))
+                    break
+                case "V":
+                    notes.push(new VF.StaveNote({clef: "treble", keys: ["b/3", "e/4", "g/4"], duration: element }))
+                    break
+                case "VI":
+                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "a/4"], duration: element }))
+                    break
+                default:
+                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
+            }     
+
+        })
         
         return notes
     }
@@ -105,23 +108,31 @@ export default class StructureDetail extends React.Component {
             {selectedIndex:index }
         )
     }
+
+    handleRhythm = (index)=>{
+        this.setState(
+            {selectedRhythm:index }
+        )
+    }
+
     render(){
         const VF = Vex.Flow;
 
         const {Accidental, StaveNote} = Vex.Flow;
 
 
-         const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
-
-         var harm = []
-         harmony.map( part => {
-            harm.push(this.createNotes(part))
+        const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
+        const rhythm = config.genders[0].rhythms[this.state.selectedRhythm].detail
+        var harm = []
+        harmony.map( part => {
+            harm.push(this.createNotes(part ,rhythm ))
         
-         })
+        })
             
     
         const list = ["I-IV-V-VI" , "I-V-VI-IV", "VI-IV-I-V ", "IV-I-V-VI " ]
-          
+        
+        const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3"]
 
         return <div style={{width:'100%' , display:'flex', flexDirection:'column', flexWrap:'wrap'}}>
             
@@ -132,6 +143,13 @@ export default class StructureDetail extends React.Component {
                 indexSelected= {this.state.selectedIndex}
                 list={list}
                 callback = {this.handleCallback}
+                
+            />
+            <Dropdown  
+                title="Ritmos"
+                indexSelected= {this.state.selectedRhythm}
+                list={titleRhythm}
+                callback = {this.handleRhythm}
                 
             />
             <div style={{ width:'100%' , display: 'flex', justifyContent:'space-between' }}>
