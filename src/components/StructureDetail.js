@@ -6,8 +6,10 @@ import Vex  from "vexflow";
 import Note from "./Note";
 import * as config from '../config.json'
 import { Dropdown } from './Dropdown';
+import { Rhythm } from '../libs/Rhythm';
 
-const onPlay = (harmony)=> {
+
+const onPlay = (harmony, rhythm)=> {
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
         "A4": "mp3Notes/a4.mp3",
@@ -20,48 +22,76 @@ const onPlay = (harmony)=> {
         "C5": "mp3Notes/c5.mp3",
     }).toDestination();
 
-    Tone.Transport.bpm.value = 200
+    const song = createStructure(harmony,rhythm)
+    var notas = song.notes
+    var duraciones = song.durations
+
+    //    const myMelody = createStructure(harmony,rhythm)
+    const myMelody = Rhythm.mergeDurationsAndPitch(duraciones, notas);
+        console.log("myMelody:", myMelody)
+    const part = new Tone.Part(function(time, value){
+        //the value is an object which contains both the note and the duration
+        console.log("time dentro loaded:",time,"\n valor:", value)
+        //sampler.triggerAttackRelease(value.notes, value.duration, time);
+        sampler.triggerAttackRelease(value.note, value.duration, time);
+    }, myMelody)
+
 
     Tone.loaded().then(() => {
-        const now = Tone.now()
-        harmony.map((chord, i) => {
-            console.log(chord)
-            console.log(harmony)
-            switch (chord){
-                case "I":
-                    sampler.triggerAttack(["C4", "E4", "G4"], now +i/2)
-                    break;
-                case "IV":
-                    sampler.triggerAttack(["C4", "F4", "G4"], now +i/2)
-
-                    break
-                case "V":
-                    sampler.triggerAttack(["B3","E4","G4" ], now+i)
-
-                    break
-                case "VI":
-                    sampler.triggerAttack(["C4", "E4","A4"], now+i/2)
-                    break
-                default:
-                    sampler.triggerAttack(["C5"], now +i/2)
-
-            }      
-            
-        })
-            
+        part.start()
+        console.log("part lenght",part)
     })
-        
-        /*
-        sampler.triggerAttack(["C5"], now);
-        sampler.triggerAttack(["D4"], now +1);
-        sampler.triggerAttack(["C4", "E4", "G4"], now +2);*/
-   
-
+    Tone.Transport.bpm.value = 90
+    Tone.Transport.start();
     
-
 }
 
+function createStructure(harmony,rhythm){
+    var notes = []
+    var durations = []
+    harmony.map((chord) => {
+        
+        rhythm.map( (element,i) => {
+            switch (chord){
 
+                case "I":
+                    notes.push(["C4", "E4", "G4"])
+                    durations.push(+element+"n")
+                   
+                    
+                    break;
+                case "IV":
+                    notes.push(["C4", "F4", "G4"])
+                    durations.push(+element+"n")
+                    
+                    break
+                case "V":
+                    notes.push( ["B3","E4","G4" ])
+                    durations.push(+element+"n")
+                    
+                    
+                    break
+                case "VI":
+                    notes.push(["C4", "E4","A4"])
+                    durations.push(+element+"n")
+                    // song.push({
+                    //     "time":"+" +element+"n",
+                    //     "notes": ["C4", "E4","A4"],
+                    //     "duration":element+"n"
+                    // })
+                    
+                    break
+                default:
+
+            }
+        })
+    })
+
+    return {
+        "notes": notes,
+        "durations":durations
+    }
+}
 export default class StructureDetail extends React.Component {
     
     constructor(props){
@@ -78,7 +108,7 @@ export default class StructureDetail extends React.Component {
         const {Accidental, StaveNote} = Vex.Flow;
         var notes = [
           ];
-          console.log(rhythm)
+        console.log(rhythm)
         rhythm.map( element => {
 
             switch (acord){
@@ -132,7 +162,7 @@ export default class StructureDetail extends React.Component {
     
         const list = ["I-IV-V-VI" , "I-V-VI-IV", "VI-IV-I-V ", "IV-I-V-VI " ]
         
-        const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3"]
+        const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"]
 
         return <div style={{width:'100%' , display:'flex', flexDirection:'column', flexWrap:'wrap'}}>
             
@@ -158,7 +188,7 @@ export default class StructureDetail extends React.Component {
             </div>
             
             
-            <button style={{marginTop:40}} onClick={() =>onPlay(harmony)}> play</button>
+            <button style={{marginTop:40}} onClick={() =>onPlay(harmony,rhythm)}> play</button>
     
         </div>
 
