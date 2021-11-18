@@ -13,7 +13,7 @@ comprobar que estigui instalat: `npm -v`
 anar a aquesta carpeta i cridar la seguent comanda amb el terminal
 (es podran veure instalades dintre de la carpeta node_modules)
 
-`npm -i `
+`npm i `
 
 # 3- Inciar el projecte
 

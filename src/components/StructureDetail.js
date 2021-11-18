@@ -7,6 +7,7 @@ import Note from "./Note";
 import * as config from '../config.json'
 import { Dropdown } from './Dropdown';
 import { Rhythm } from '../libs/Rhythm';
+import {TabBar} from './TabBar';
 
 
 const onPlay = (harmony, rhythm)=> {
@@ -58,7 +59,6 @@ function createStructure(harmony,rhythm){
                     notes.push(["C4", "E4", "G4"])
                     durations.push(+element+"n")
                    
-                    
                     break;
                 case "IV":
                     notes.push(["C4", "F4", "G4"])
@@ -68,8 +68,7 @@ function createStructure(harmony,rhythm){
                 case "V":
                     notes.push( ["B3","E4","G4" ])
                     durations.push(+element+"n")
-                    
-                    
+                                     
                     break
                 case "VI":
                     notes.push(["C4", "E4","A4"])
@@ -98,31 +97,64 @@ export default class StructureDetail extends React.Component {
         super(props)
         this.state = {
             selectedIndex:0,
-            selectedRhythm:0
+            selectedRhythm:0,
+            selectedMelody:0
         }
         
     }
-    createNotes(acord, rhythm){
+    createNotes(acord, rhythm, melody){
         const VF = Vex.Flow;
 
         const {Accidental, StaveNote} = Vex.Flow;
         var notes = [
           ];
         console.log(rhythm)
-        rhythm.map( element => {
+        rhythm.map( (element, index) => {
 
             switch (acord){
                 case "I":
-                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
+                    if(melody[index] == 1){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    }
+                    if(melody[index] == 3){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    }
+                    if(melody[index] == 5){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["g/4"], duration: element }))
+                    }
                     break;
                 case "IV":
-                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "f/4", "a/4"], duration: element }))
+                    if(melody[index] == 1){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    }
+                    if(melody[index] == 3){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["f/4"], duration: element }))
+                    }
+                    if(melody[index] == 5){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["a/4"], duration: element }))
+                    }
                     break
                 case "V":
-                    notes.push(new VF.StaveNote({clef: "treble", keys: ["b/3", "e/4", "g/4"], duration: element }))
+                    if(melody[index] == 1){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["b/3"], duration: element }))
+                    }
+                    if(melody[index] == 3){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    }
+                    if(melody[index] == 5){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["g/4"], duration: element }))
+                    }
                     break
                 case "VI":
-                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "a/4"], duration: element }))
+                    if(melody[index] == 1){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    }
+                    if(melody[index] == 3){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    }
+                    if(melody[index] == 5){
+                        notes.push(new VF.StaveNote({clef: "treble", keys: ["a/4"], duration: element }))
+                    }
                     break
                 default:
                     notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
@@ -145,6 +177,13 @@ export default class StructureDetail extends React.Component {
         )
     }
 
+    handleMelody = (index)=>{
+        this.setState(
+            {selectedMelody:index }
+        )
+    }
+
+
     render(){
         const VF = Vex.Flow;
 
@@ -153,9 +192,11 @@ export default class StructureDetail extends React.Component {
 
         const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
         const rhythm = config.genders[0].rhythms[this.state.selectedRhythm].detail
+        const melody = config.genders[0].notes[this.state.selectedMelody].detail
+
         var harm = []
         harmony.map( part => {
-            harm.push(this.createNotes(part ,rhythm ))
+            harm.push(this.createNotes(part ,rhythm, melody ))
         
         })
             
@@ -183,8 +224,7 @@ export default class StructureDetail extends React.Component {
                 
             />
             <div style={{ width:'100%' , display: 'flex', justifyContent:'space-between' }}>
-            {harm.map( (c, i) =><div style={{width:310, height:100}}>  < Note chord={c} refname={i} /> </div>)
-            }
+            {harm.map( (c, i) =><div >  < Note chord={c} refname={i} /> <TabBar callback = {this.handleMelody}></TabBar> </div>)}
             </div>
             
             
