@@ -10,7 +10,7 @@ import { Rhythm } from '../libs/Rhythm';
 import {TabBar} from './TabBar';
 
 
-const onPlay = (harmony, rhythm)=> {
+const onPlay = (harmony, rhythm, melody)=> {
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
         "A4": "mp3Notes/a4.mp3",
@@ -21,9 +21,10 @@ const onPlay = (harmony, rhythm)=> {
         "F4": "mp3Notes/f4.mp3",
         "G4": "mp3Notes/g4.mp3",
         "C5": "mp3Notes/c5.mp3",
+        "A5": "mp3Notes/a5.mp3",
     }).toDestination();
 
-    const song = createStructure(harmony,rhythm)
+    const song = createStructure(harmony,rhythm, melody)
     var notas = song.notes
     var duraciones = song.durations
 
@@ -47,7 +48,7 @@ const onPlay = (harmony, rhythm)=> {
     
 }
 
-function createStructure(harmony,rhythm){
+function createStructure(harmony,rhythm, melody){
     var notes = []
     var durations = []
     harmony.map((chord) => {
@@ -56,22 +57,61 @@ function createStructure(harmony,rhythm){
             switch (chord){
 
                 case "I":
-                    notes.push(["C4", "E4", "G4"])
+                    if(melody[i] == 1){
+                        notes.push(["C4"])
+                    }
+                    if(melody[i] == 3){
+                        notes.push(["E4"])
+                    }
+                    if(melody[i] == 5){
+                        notes.push(["G4"])
+
+                    }
+                    //notes.push(["C4", "E4", "G4"])
+
                     durations.push(+element+"n")
                    
                     break;
                 case "IV":
-                    notes.push(["C4", "F4", "G4"])
+                    if(melody[i] == 1){
+                        notes.push(["C4"])
+                    }
+                    if(melody[i] == 3){
+                        notes.push(["F4"])
+                    }
+                    if(melody[i] == 5){
+                        notes.push(["A5"])
+
+                    }
                     durations.push(+element+"n")
                     
                     break
                 case "V":
-                    notes.push( ["B3","E4","G4" ])
+                    if(melody[i] == 1){
+                        notes.push(["B3"])
+                    }
+                    if(melody[i] == 3){
+                        notes.push(["E4"])
+                    }
+                    if(melody[i] == 5){
+                        notes.push(["G4"])
+
+                    }
                     durations.push(+element+"n")
                                      
                     break
                 case "VI":
-                    notes.push(["C4", "E4","A4"])
+
+                    if(melody[i] == 1){
+                        notes.push(["C4"])
+                    }
+                    if(melody[i] == 3){
+                        notes.push(["E4"])
+                    }
+                    if(melody[i] == 5){
+                        notes.push(["A5"])
+
+                    }
                     durations.push(+element+"n")
                     // song.push({
                     //     "time":"+" +element+"n",
@@ -228,7 +268,7 @@ export default class StructureDetail extends React.Component {
             </div>
             
             
-            <button style={{marginTop:40}} onClick={() =>onPlay(harmony,rhythm)}> play</button>
+            <button style={{marginTop:40}} onClick={() =>onPlay(harmony,rhythm, melody)}> play</button>
     
         </div>
 
