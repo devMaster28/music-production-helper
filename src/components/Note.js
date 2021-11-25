@@ -13,8 +13,10 @@ const {
 export default class Note extends Component {
     render() {
         return <div ref={"outer"} style={{
+            width:300,
             padding: 10,
             borderRadius: 10,
+            backgroundColor:this.props.selected? '#5bc0de':'',
             display: "inline-block",
         }}>
         </div>;

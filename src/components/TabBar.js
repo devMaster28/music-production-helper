@@ -14,50 +14,64 @@ export class TabBar extends React.Component {
     this.setState(
         {selectedmelody:index }
     )
-    this.props.callback(index)
+    this.props.callbackRhythm(index)
   }
 
+  handleAccompaniment = (index)=>{
+    this.setState(
+        {selectedmelody:index }
+    )
+    this.props.callbackAccompaniment(index)
+  }
     
     render(){
         var buttons = []
         for (var i = 0; i < 4; i++) {
             buttons.push(<button className='indent' key={i}>_</button>);
         }
-        const titleRhythm = ["acompañamiento 1", "acompañamiento 2"]
+        const titleacompanamiento = ["acompañamiento 1", "acompañamiento 2"]
 
-        
+      const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"] 
       return(
         <div className="tabs">
-         <Tabs>
-           <Tab label="Ritmo">   
-             <div>
-                <div>
-                    {buttons } 
-                </div>
-                <div>
-                    {buttons } 
-                </div>
-                <div>
-                    {buttons } 
-                </div>
-                <div>
-                    {buttons } 
-                </div>
-               <p>Tab 1 content</p>
-             </div>
+         <Tabs >
+         
+           <Tab label="Ritmo" >
+             <div style={{display:'flex', marginLeft:20} }>
+              
+              <div style={{ display:'flex', flexDirection:'column'}}> 
+                {titleRhythm.map((item,index) => (
+                  <button
+                    type="button"
+                    className="dd-list-item"
+                    style={{backgroundColor:"white" , borderWidth:1, marginTop:10, width:100}}
+                    key={index}
+                    onClick={() =>this.handleRhythm(index)}
+                  >
+                    {item}
+                  </button>
+                ))}   
+
+              </div>
+             
+           
+             
+
+            </div>
+           
            </Tab>
-           <Tab label="Estructura">
-             <div>
+           <Tab label="Notas">
+             {<div>
                
              <Dropdown  
                 title="Melodia"
                 indexSelected= {this.state.selectedmelody}
-                list={titleRhythm}
-                callback = {this.handleRhythm}
+                list={titleacompanamiento}
+                callback = {this.handleAccompaniment}
                 
             />
 
-             </div>
+             </div>}
            </Tab>
          </Tabs>
         </div>
@@ -71,8 +85,9 @@ export class TabBar extends React.Component {
       activeTab: this.props.children[0].props.label
     }
     changeTab = (tab) => {
-  
       this.setState({ activeTab: tab });
+      
+
     };
     render(){
       
@@ -98,7 +113,7 @@ export class TabBar extends React.Component {
     return(
       <div className="tab-buttons">
       {buttons.map(button =>{
-         return <button className={button === activeTab? 'active': ''} onClick={()=>changeTab(button)}>{button}</button>
+         return <button className={button === activeTab? 'active': ''} style={{backgroundColor:'white', marginLeft:10, marginRight:10 , borderColor:'#5bc0de '}} onClick={()=>changeTab(button)}>{button}</button>
       })}
       </div>
     )

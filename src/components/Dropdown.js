@@ -40,6 +40,7 @@ export class Dropdown extends React.Component{
         <button
           type="button"
           className="dd-header"
+          style={{backgroundColor:"white" , borderWidth:1}}
           onClick={this.toggleList}
         >
           <div className="dd-header-title">{headerTitle}</div>
@@ -54,6 +55,7 @@ export class Dropdown extends React.Component{
               <button
                 type="button"
                 className="dd-list-item"
+                style={{backgroundColor:"white" , borderWidth:1, marginLeft:10, marginRight:10}}
                 key={index}
                 onClick={() =>this.onTrigger(index)}
               >

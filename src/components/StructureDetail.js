@@ -30,10 +30,8 @@ const onPlay = (harmony, rhythm, melody)=> {
 
     //    const myMelody = createStructure(harmony,rhythm)
     const myMelody = Rhythm.mergeDurationsAndPitch(duraciones, notas);
-        console.log("myMelody:", myMelody)
     const part = new Tone.Part(function(time, value){
         //the value is an object which contains both the note and the duration
-        console.log("time dentro loaded:",time,"\n valor:", value)
         //sampler.triggerAttackRelease(value.notes, value.duration, time);
         sampler.triggerAttackRelease(value.note, value.duration, time);
     }, myMelody)
@@ -138,7 +136,14 @@ export default class StructureDetail extends React.Component {
         this.state = {
             selectedIndex:0,
             selectedRhythm:0,
-            selectedMelody:0
+            selectedMelody:0,
+            tabVisible:false,
+            chord:0,
+            song:{
+                harmony:["I","IV","V","VI"],
+                rhythms:[0,0,0,0],
+                melody:[0,0,0,0]
+            }
         }
         
     }
@@ -148,7 +153,6 @@ export default class StructureDetail extends React.Component {
         const {Accidental, StaveNote} = Vex.Flow;
         var notes = [
           ];
-        console.log(rhythm)
         rhythm.map( (element, index) => {
 
             switch (acord){
@@ -223,7 +227,20 @@ export default class StructureDetail extends React.Component {
         )
     }
 
-
+    handleTabUser = (index)=>{
+        
+        if(index == this.state.chord){
+            this.setState(
+                {tabVisible:!this.state.tabVisible }
+            )
+        }else{
+            this.setState(
+                {chord:index,
+                tabVisible:true }
+            )
+        }
+        
+    }
     render(){
         const VF = Vex.Flow;
 
@@ -247,26 +264,29 @@ export default class StructureDetail extends React.Component {
 
         return <div style={{width:'100%' , display:'flex', flexDirection:'column', flexWrap:'wrap'}}>
             
-            <div> Estructura harmonica</div>
             
             <Dropdown  
-                title="Estructures"
+                title="Estructura harmonica"
                 indexSelected= {this.state.selectedIndex}
                 list={list}
                 callback = {this.handleCallback}
                 
             />
-            <Dropdown  
-                title="Ritmos"
-                indexSelected= {this.state.selectedRhythm}
-                list={titleRhythm}
-                callback = {this.handleRhythm}
-                
-            />
+           
             <div style={{ width:'100%' , display: 'flex', justifyContent:'space-between' }}>
-            {harm.map( (c, i) =><div >  < Note chord={c} refname={i} /> <TabBar callback = {this.handleMelody}></TabBar> </div>)}
+            {harm.map( (c, i) =>{
+                const selected = this.state.chord == i && this.state.tabVisible
+                console.log("border", selected)
+                return <div onClick={()=>this.handleTabUser(i)} >  
+                    < Note chord={c} refname={i} selected={selected} /> 
+                    
+                </div>})}
             </div>
             
+            {this.state.tabVisible &&<TabBar callbackAccompaniment = {this.handleMelody} index={0} callbackRhythm={this.handleRhythm} 
+                        updateTabUser={this.handleTabUser}
+            ></TabBar> }
+
             
             <button style={{marginTop:40}} onClick={() =>onPlay(harmony,rhythm, melody)}> play</button>
     
