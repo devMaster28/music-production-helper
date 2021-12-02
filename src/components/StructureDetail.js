@@ -10,7 +10,7 @@ import { Rhythm } from '../libs/Rhythm';
 import {TabBar} from './TabBar';
 
 
-const onPlay = (harmony, rhythm, melody)=> {
+const onPlay = (harmony, presong)=> {
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
         "A4": "mp3Notes/a4.mp3",
@@ -24,7 +24,7 @@ const onPlay = (harmony, rhythm, melody)=> {
         "A5": "mp3Notes/a5.mp3",
     }).toDestination();
 
-    const song = createStructure(harmony,rhythm, melody)
+    const song = createStructure(harmony, presong)
     var notas = song.notes
     var duraciones = song.durations
 
@@ -46,11 +46,13 @@ const onPlay = (harmony, rhythm, melody)=> {
     
 }
 
-function createStructure(harmony,rhythm, melody){
+function createStructure(harmony,presong){
+
     var notes = []
     var durations = []
-    harmony.map((chord) => {
-        
+    harmony.map((chord, index) => {
+        const rhythm = config.genders[0].rhythms[presong.rhythms[index]].detail
+        const melody = config.genders[0].notes[presong.melody[index]].detail 
         rhythm.map( (element,i) => {
             switch (chord){
 
@@ -216,14 +218,18 @@ export default class StructureDetail extends React.Component {
     }
 
     handleRhythm = (index)=>{
+        var copySong = this.state.song
+        copySong.rhythms[this.state.chord]= index
         this.setState(
-            {selectedRhythm:index }
+            {song:copySong }
         )
     }
 
     handleMelody = (index)=>{
+        var copySong = this.state.song
+        copySong.melody[this.state.chord]= index
         this.setState(
-            {selectedMelody:index }
+            {song:copySong }
         )
     }
 
@@ -248,11 +254,12 @@ export default class StructureDetail extends React.Component {
 
 
         const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
-        const rhythm = config.genders[0].rhythms[this.state.selectedRhythm].detail
-        const melody = config.genders[0].notes[this.state.selectedMelody].detail
+        
 
         var harm = []
-        harmony.map( part => {
+        harmony.map( (part, index) => {
+            const rhythm = config.genders[0].rhythms[this.state.song.rhythms[index]].detail
+            const melody = config.genders[0].notes[this.state.song.melody[index]].detail 
             harm.push(this.createNotes(part ,rhythm, melody ))
         
         })
@@ -276,7 +283,6 @@ export default class StructureDetail extends React.Component {
             <div style={{ width:'100%' , display: 'flex', justifyContent:'space-between' }}>
             {harm.map( (c, i) =>{
                 const selected = this.state.chord == i && this.state.tabVisible
-                console.log("border", selected)
                 return <div onClick={()=>this.handleTabUser(i)} >  
                     < Note chord={c} refname={i} selected={selected} /> 
                     
@@ -288,7 +294,7 @@ export default class StructureDetail extends React.Component {
             ></TabBar> }
 
             
-            <button style={{marginTop:40}} onClick={() =>onPlay(harmony,rhythm, melody)}> play</button>
+            {<button style={{marginTop:40}} onClick={() =>onPlay(harmony,this.state.song)}> play</button>}
     
         </div>
 

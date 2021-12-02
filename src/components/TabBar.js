@@ -32,6 +32,7 @@ export class TabBar extends React.Component {
         const titleacompanamiento = ["acompañamiento 1", "acompañamiento 2"]
 
       const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"] 
+      const titleMelody = ["Melodia 1", "Ritmo 2", "ritmo 3", "ritmo 4"] 
       return(
         <div className="tabs">
          <Tabs >
@@ -62,15 +63,20 @@ export class TabBar extends React.Component {
            </Tab>
            <Tab label="Notas">
              {<div>
-               
-             <Dropdown  
-                title="Melodia"
-                indexSelected= {this.state.selectedmelody}
-                list={titleacompanamiento}
-                callback = {this.handleAccompaniment}
-                
-            />
+                <div style={{ display:'flex', flexDirection:'column' , marginLeft:20}}> 
+                  {titleacompanamiento.map((item,index) => (
+                    <button
+                      type="button"
+                      className="dd-list-item"
+                      style={{backgroundColor:"white" , borderWidth:1, marginTop:10, width:200}}
+                      key={index}
+                      onClick={() =>this.handleAccompaniment(index)}
+                    >
+                      {item}
+                    </button>
+                  ))}   
 
+                </div>
              </div>}
            </Tab>
          </Tabs>
