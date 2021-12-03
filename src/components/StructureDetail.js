@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React , {Component}from 'react';
 import * as Tone from 'tone'
 
 import Vex  from "vexflow";
@@ -8,7 +8,7 @@ import * as config from '../config.json'
 import { Dropdown } from './Dropdown';
 import { Rhythm } from '../libs/Rhythm';
 import {TabBar} from './TabBar';
-
+import { Midi } from '@tonejs/midi'
 
 const onPlay = (harmony, presong)=> {
     const sampler = new Tone.Sampler({
@@ -45,7 +45,106 @@ const onPlay = (harmony, presong)=> {
     Tone.Transport.start();
     
 }
+const writeMidi = async () =>{
 
+    var midi = new Midi()
+    // add a track
+    const track = midi.addTrack()
+    track.addNote({
+        midi : 60,
+        time : 0,
+        duration: 0.2
+    })
+    .addNote({
+        name : 'C5',
+        time : 0.3,
+        duration: 0.1
+    })
+    .addCC({
+        number : 64,
+        value : 127,
+        time : 0.2
+    })
+    console.log()
+    
+    
+    // write the output
+}
+
+const  onPlayMidi =  async (path)=>  {
+    const sampler = new Tone.Sampler({
+        "B3": "mp3Notes/b3.mp3",
+        "A4": "mp3Notes/a4.mp3",
+        "B4": "mp3Notes/b4.mp3",
+        "C4": "mp3Notes/c4.mp3",
+        "D4": "mp3Notes/d4.mp3",
+        "E4": "mp3Notes/e4.mp3",
+        "F4": "mp3Notes/f4.mp3",
+        "G4": "mp3Notes/g4.mp3",
+        "C5": "mp3Notes/c5.mp3",
+        "A5": "mp3Notes/a5.mp3",
+        "A#4": "mp3Notes/a-4.mp3",
+        "C#4": "mp3Notes/c-4.mp3",
+        "D#4": "mp3Notes/d-4.mp3",
+        "F#4": "mp3Notes/f-4.mp3",
+        "G#4": "mp3Notes/g-4.mp3",
+    }).toDestination();
+    //const midiData = fs.readFileSync(path)
+    //const midi = new Midi(path)
+    const midi = await Midi.fromUrl("midis/midi1.mid")
+    console.log(midi)
+    //    const myMelody = createStructure(harmony,rhythm)
+    const part = new Tone.Part(function(time, value){
+
+        //the value is an object which contains both the note and the duration
+        //sampler.triggerAttackRelease(value.notes, value.duration, time);
+        sampler.triggerAttackRelease(value.pitch+"4", value.duration,time);
+    },  midi.tracks[1].notes)
+
+
+    Tone.loaded().then(() => {
+        part.start()
+       
+    })
+    Tone.Transport.bpm.value = 90
+    Tone.Transport.start();
+    
+  
+    
+}
+
+async function carregarMidi(){
+    const midi = await Midi.fromUrl("midis/midi2.mid")
+    //the file name decoded from the first track
+    const name = midi.name
+    //get the tracks
+    console.log("midi", midi)
+    var fnalNotes = []
+
+    midi.tracks.forEach(track => {
+    //tracks have notes and controlChanges
+        console.log(track)
+    //notes are an array
+    const notes = track.notes
+    notes.forEach(note => {
+        //note.midi, note.time, note.duration, note.name
+        fnalNotes.push([note.pitch+"4"])
+
+    })
+    const promise =  new Promise(resolve => {
+
+          resolve('resolved');
+        
+      })
+
+    //the control changes are an object
+    //the keys are the CC number
+
+    //the track also has a channel and instrument
+    //track.instrument.name
+    return promise
+    })
+}   
 function createStructure(harmony,presong){
 
     var notes = []
@@ -131,7 +230,7 @@ function createStructure(harmony,presong){
         "durations":durations
     }
 }
-export default class StructureDetail extends React.Component {
+export default class StructureDetail extends Component {
     
     constructor(props){
         super(props)
@@ -145,10 +244,13 @@ export default class StructureDetail extends React.Component {
                 harmony:["I","IV","V","VI"],
                 rhythms:[0,0,0,0],
                 melody:[0,0,0,0]
-            }
+            },
+            midi:null
         }
         
     }
+
+    
     createNotes(acord, rhythm, melody){
         const VF = Vex.Flow;
 
@@ -248,6 +350,7 @@ export default class StructureDetail extends React.Component {
         
     }
     render(){
+       
         const VF = Vex.Flow;
 
         const {Accidental, StaveNote} = Vex.Flow;
@@ -264,11 +367,13 @@ export default class StructureDetail extends React.Component {
         
         })
             
-    
+        
         const list = ["I-IV-V-VI" , "I-V-VI-IV", "VI-IV-I-V ", "IV-I-V-VI " ]
         
         const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"]
 
+        console.log("midi", this.state.midi)
+        
         return <div style={{width:'100%' , display:'flex', flexDirection:'column', flexWrap:'wrap'}}>
             
             
@@ -295,9 +400,33 @@ export default class StructureDetail extends React.Component {
 
             
             {<button style={{marginTop:40}} onClick={() =>onPlay(harmony,this.state.song)}> play</button>}
-    
+
+            <p>Play midi</p>
+            <input
+                id="midi_input"
+                className="none"
+                type="file"
+               
+            />
+
+            {<button style={{marginTop:40}} onClick={() =>onPlayMidi(this.state.midi)}> playMidi</button>}
+
+            <p>generar midi</p>
+            {<button style={{marginTop:40}} onClick={() =>writeMidi()}> generar</button>}
+
+
         </div>
 
+    }
+    componentDidUpdate(prevState){
+        console.log("entra")
+        const fileInput = document.getElementById('midi_input');
+        console.log("file", fileInput)
+        fileInput.onchange = (e) => {
+            const selectedFile = fileInput.files[0];
+            console.log(selectedFile);
+            this.setState({midi: selectedFile.path})
+        }
     }
    
 }
