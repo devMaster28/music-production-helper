@@ -12,7 +12,12 @@ function createWindow() {
         fullscreenable: false,
         frame: false,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false,
+            nodeIntegrationInWorker: true,
+            nodeIntegrationInSubFrames: true
         }
     })
 

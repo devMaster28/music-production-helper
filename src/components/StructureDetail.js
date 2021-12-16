@@ -45,33 +45,34 @@ const onPlay = (harmony, presong)=> {
     Tone.Transport.start();
     
 }
-const writeMidi = async () =>{
-
+const writeMidi = async (harmony,presong) =>{
+    const fs = window.require('fs');
     var midi = new Midi()
     // add a track
     const track = midi.addTrack()
-    track.addNote({
-        midi : 60,
-        time : 0,
-        duration: 0.2
-    })
-    .addNote({
-        name : 'C5',
-        time : 0.3,
-        duration: 0.1
-    })
-    .addCC({
-        number : 64,
-        value : 127,
-        time : 0.2
-    })
-    console.log()
-    
-    
-    // write the output
+
+    const song = createStructure(harmony, presong)
+    var notas = song.notes
+    var duraciones = song.durations
+
+    //    const myMelody = createStructure(harmony,rhythm)
+    const myMelody = Rhythm.mergeDurationsAndPitch(duraciones, notas);
+    console.log(myMelody)
+    for (let index = 0; index < myMelody.length; index++) {
+        
+        track.addNote({
+            name : myMelody[index].note,
+            time : myMelody[index].time,
+            duration: Tone.Time( myMelody[index].duration)
+          }) 
+        
+    }
+
+    fs.writeFileSync("output.mid", new Buffer(midi.toArray()))
 }
 
 const  onPlayMidi =  async (path)=>  {
+    const fs = window.require('fs');
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
         "A4": "mp3Notes/a4.mp3",
@@ -89,9 +90,9 @@ const  onPlayMidi =  async (path)=>  {
         "F#4": "mp3Notes/f-4.mp3",
         "G#4": "mp3Notes/g-4.mp3",
     }).toDestination();
-    //const midiData = fs.readFileSync(path)
-    //const midi = new Midi(path)
-    const midi = await Midi.fromUrl("midis/midi1.mid")
+    const midiData = fs.readFileSync(path)
+    const midi = new Midi(midiData)
+    //const midi = await Midi.fromUrl(path)
     console.log(midi)
     //    const myMelody = createStructure(harmony,rhythm)
     const part = new Tone.Part(function(time, value){
@@ -113,46 +114,16 @@ const  onPlayMidi =  async (path)=>  {
     
 }
 
-async function carregarMidi(){
-    const midi = await Midi.fromUrl("midis/midi2.mid")
-    //the file name decoded from the first track
-    const name = midi.name
-    //get the tracks
-    console.log("midi", midi)
-    var fnalNotes = []
-
-    midi.tracks.forEach(track => {
-    //tracks have notes and controlChanges
-        console.log(track)
-    //notes are an array
-    const notes = track.notes
-    notes.forEach(note => {
-        //note.midi, note.time, note.duration, note.name
-        fnalNotes.push([note.pitch+"4"])
-
-    })
-    const promise =  new Promise(resolve => {
-
-          resolve('resolved');
-        
-      })
-
-    //the control changes are an object
-    //the keys are the CC number
-
-    //the track also has a channel and instrument
-    //track.instrument.name
-    return promise
-    })
-}   
+  
 function createStructure(harmony,presong){
 
     var notes = []
+    
     var durations = []
     harmony.map((chord, index) => {
         const rhythm = config.genders[0].rhythms[presong.rhythms[index]].detail
         const melody = config.genders[0].notes[presong.melody[index]].detail 
-        rhythm.map( (element,i) => {
+        rhythm.map( (element,i) => {    
             switch (chord){
 
                 case "I":
@@ -170,7 +141,7 @@ function createStructure(harmony,presong){
 
                     durations.push(+element+"n")
                    
-                    break;
+                    break;                      
                 case "IV":
                     if(melody[i] == 1){
                         notes.push(["C4"])
@@ -412,7 +383,7 @@ export default class StructureDetail extends Component {
             {<button style={{marginTop:40}} onClick={() =>onPlayMidi(this.state.midi)}> playMidi</button>}
 
             <p>generar midi</p>
-            {<button style={{marginTop:40}} onClick={() =>writeMidi()}> generar</button>}
+            {<button style={{marginTop:40}} onClick={() =>writeMidi(harmony,this.state.song)}> generar</button>}
 
 
         </div>
