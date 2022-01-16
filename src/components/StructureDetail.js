@@ -1,16 +1,16 @@
 
-import React , {Component}from 'react';
+import React, { Component } from 'react';
 import * as Tone from 'tone'
 
-import Vex  from "vexflow";
+import Vex from "vexflow";
 import Note from "./Note";
 import * as config from '../config.json'
 import { Dropdown } from './Dropdown';
 import { Rhythm } from '../libs/Rhythm';
-import {TabBar} from './TabBar';
+import { TabBar } from './TabBar';
 import { Midi } from '@tonejs/midi'
 
-const onPlay = (harmony, presong)=> {
+const onPlay = (harmony, presong) => {
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
         "A4": "mp3Notes/a4.mp3",
@@ -30,7 +30,7 @@ const onPlay = (harmony, presong)=> {
 
     //    const myMelody = createStructure(harmony,rhythm)
     const myMelody = Rhythm.mergeDurationsAndPitch(duraciones, notas);
-    const part = new Tone.Part(function(time, value){
+    const part = new Tone.Part(function (time, value) {
         //the value is an object which contains both the note and the duration
         //sampler.triggerAttackRelease(value.notes, value.duration, time);
         sampler.triggerAttackRelease(value.note, value.duration, time);
@@ -39,13 +39,13 @@ const onPlay = (harmony, presong)=> {
 
     Tone.loaded().then(() => {
         part.start()
-        console.log("part lenght",part)
+        console.log("part lenght", part)
     })
     Tone.Transport.bpm.value = 90
     Tone.Transport.start();
-    
+
 }
-const writeMidi = async (harmony,presong) =>{
+const writeMidi = async (harmony, presong) => {
     const fs = window.require('fs');
     var midi = new Midi()
     // add a track
@@ -59,19 +59,19 @@ const writeMidi = async (harmony,presong) =>{
     const myMelody = Rhythm.mergeDurationsAndPitch(duraciones, notas);
     console.log(myMelody)
     for (let index = 0; index < myMelody.length; index++) {
-        
+
         track.addNote({
-            name : myMelody[index].note,
-            time : myMelody[index].time,
-            duration: Tone.Time( myMelody[index].duration)
-          }) 
-        
+            name: myMelody[index].note,
+            time: myMelody[index].time,
+            duration: Tone.Time(myMelody[index].duration)
+        })
+
     }
 
     fs.writeFileSync("output.mid", new Buffer(midi.toArray()))
 }
 
-const  onPlayMidi =  async (path)=>  {
+const onPlayMidi = async (path) => {
     const fs = window.require('fs');
     const sampler = new Tone.Sampler({
         "B3": "mp3Notes/b3.mp3",
@@ -95,23 +95,23 @@ const  onPlayMidi =  async (path)=>  {
     //const midi = await Midi.fromUrl(path)
     console.log(midi)
     //    const myMelody = createStructure(harmony,rhythm)
-    const part = new Tone.Part(function(time, value){
+    const part = new Tone.Part(function (time, value) {
 
         //the value is an object which contains both the note and the duration
         //sampler.triggerAttackRelease(value.notes, value.duration, time);
-        sampler.triggerAttackRelease(value.pitch+"4", value.duration,time);
-    },  midi.tracks[1].notes)
+        sampler.triggerAttackRelease(value.pitch + "4", value.duration, time);
+    }, midi.tracks[1].notes)
 
 
     Tone.loaded().then(() => {
         part.start()
-       
+
     })
     Tone.Transport.bpm.value = 90
     Tone.Transport.start();
-    
-  
-    
+
+
+
 }
 
 function convertMidi(path) {
@@ -119,105 +119,105 @@ function convertMidi(path) {
     const fs = window.require('fs');
     const midiData = fs.readFileSync(path)
     const midi = new Midi(midiData)
-    
-    const bpm = Math.round( midi.header.tempos[0].bpm)
+
+    const bpm = Math.round(midi.header.tempos[0].bpm)
     const notes = midi.tracks[1].notes
     console.log(bpm)
     console.log(notes)
 
-    const STANDAR_DURATION = [4,2 ,1, 1/2, 1/4]
+    const STANDAR_DURATION = [4, 2, 1, 1 / 2, 1 / 4]
 
     var result = []
     notes.map((note, index) => {
-        var durationNote = note.duration * bpm/60
-        var closest = STANDAR_DURATION.reduce(function(prev, curr) {
+        var durationNote = note.duration * bpm / 60
+        var closest = STANDAR_DURATION.reduce(function (prev, curr) {
             return (Math.abs(curr - durationNote) < Math.abs(prev - durationNote) ? curr : prev);
-          });
+        });
         var myNote = {
-            name:note.pitch.toLowerCase()+"/"+note.octave,
-            duration: (1/closest)*4,
-            relativeDuration:closest
+            name: note.pitch.toLowerCase() + "/" + note.octave,
+            duration: (1 / closest) * 4,
+            relativeDuration: closest
         }
         result.push(myNote)
     })
     return result
 }
 
-  
-function createStructure(harmony,presong){
+
+function createStructure(harmony, presong) {
 
     var notes = []
-    
+
     var durations = []
     harmony.map((chord, index) => {
         const rhythm = config.genders[0].rhythms[presong.rhythms[index]].detail
-        const melody = config.genders[0].notes[presong.melody[index]].detail 
-        rhythm.map( (element,i) => {    
-            switch (chord){
+        const melody = config.genders[0].notes[presong.melody[index]].detail
+        rhythm.map((element, i) => {
+            switch (chord) {
 
                 case "I":
-                    if(melody[i] == 1){
+                    if (melody[i] == 1) {
                         notes.push(["C4"])
                     }
-                    if(melody[i] == 3){
+                    if (melody[i] == 3) {
                         notes.push(["E4"])
                     }
-                    if(melody[i] == 5){
+                    if (melody[i] == 5) {
                         notes.push(["G4"])
 
                     }
                     //notes.push(["C4", "E4", "G4"])
 
-                    durations.push(+element+"n")
-                   
-                    break;                      
+                    durations.push(+element + "n")
+
+                    break;
                 case "IV":
-                    if(melody[i] == 1){
+                    if (melody[i] == 1) {
                         notes.push(["C4"])
                     }
-                    if(melody[i] == 3){
+                    if (melody[i] == 3) {
                         notes.push(["F4"])
                     }
-                    if(melody[i] == 5){
+                    if (melody[i] == 5) {
                         notes.push(["A5"])
 
                     }
-                    durations.push(+element+"n")
-                    
+                    durations.push(+element + "n")
+
                     break
                 case "V":
-                    if(melody[i] == 1){
+                    if (melody[i] == 1) {
                         notes.push(["B3"])
                     }
-                    if(melody[i] == 3){
+                    if (melody[i] == 3) {
                         notes.push(["E4"])
                     }
-                    if(melody[i] == 5){
+                    if (melody[i] == 5) {
                         notes.push(["G4"])
 
                     }
-                    durations.push(+element+"n")
-                                     
+                    durations.push(+element + "n")
+
                     break
                 case "VI":
 
-                    if(melody[i] == 1){
+                    if (melody[i] == 1) {
                         notes.push(["C4"])
                     }
-                    if(melody[i] == 3){
+                    if (melody[i] == 3) {
                         notes.push(["E4"])
                     }
-                    if(melody[i] == 5){
+                    if (melody[i] == 5) {
                         notes.push(["A5"])
 
                     }
-                    durations.push(+element+"n")
+                    durations.push(+element + "n")
                     // song.push({
                     //     "time":"+" +element+"n",
                     //     "notes": ["C4", "E4","A4"],
                     //     "duration":element+"n"
                     // })
-                    
+
                     break
                 default:
 
@@ -227,243 +227,250 @@ function createStructure(harmony,presong){
 
     return {
         "notes": notes,
-        "durations":durations
+        "durations": durations
     }
 }
 export default class StructureDetail extends Component {
-    
-    constructor(props){
+
+    constructor(props) {
         super(props)
         this.state = {
-            selectedIndex:0,
-            selectedRhythm:0,
-            selectedMelody:0,
-            tabVisible:false,
-            chord:0,
-            song:{
-                harmony:["I","IV","V","VI"],
-                rhythms:[0,0,0,0],
-                melody:[0,0,0,0]
+            selectedIndex: 0,
+            selectedRhythm: 0,
+            selectedMelody: 0,
+            tabVisible: false,
+            chord: 0,
+            song: {
+                harmony: ["I", "IV", "V", "VI"],
+                rhythms: [0, 0, 0, 0],
+                melody: [0, 0, 0, 0]
             },
-            midi:null,
-            convertedMidi:null
+            midi: null,
+            convertedMidi: null
         }
-        
+
     }
 
-    createNote(note){
+    createNote(note) {
         const VF = Vex.Flow;
-        return new VF.StaveNote({clef: "treble", keys: [note.name], duration: ""+note.duration+"" })
+        if (note.name.includes("#")) {
+            return new VF.StaveNote({ clef: "treble", keys: [note.name], duration: "" + note.duration + "" }).addAccidental(0, new VF.Accidental("#")
+            )
+        }
+        return new VF.StaveNote({ clef: "treble", keys: [note.name], duration: "" + note.duration + "" })
     }
-    
-    createNotes(acord, rhythm, melody){
+
+    createNotes(acord, rhythm, melody) {
         const VF = Vex.Flow;
 
-        const {Accidental, StaveNote} = Vex.Flow;
+        const { Accidental, StaveNote } = Vex.Flow;
         var notes = [
-          ];
-        rhythm.map( (element, index) => {
+        ];
+        rhythm.map((element, index) => {
 
-            switch (acord){
+            switch (acord) {
                 case "I":
-                    if(melody[index] == 1){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    if (melody[index] == 1) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["c/4"], duration: element }))
                     }
-                    if(melody[index] == 3){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    if (melody[index] == 3) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["e/4"], duration: element }))
                     }
-                    if(melody[index] == 5){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["g/4"], duration: element }))
+                    if (melody[index] == 5) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["g/4"], duration: element }))
                     }
                     break;
                 case "IV":
-                    if(melody[index] == 1){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    if (melody[index] == 1) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["c/4"], duration: element }))
                     }
-                    if(melody[index] == 3){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["f/4"], duration: element }))
+                    if (melody[index] == 3) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["f/4"], duration: element }))
                     }
-                    if(melody[index] == 5){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["a/4"], duration: element }))
+                    if (melody[index] == 5) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["a/4"], duration: element }))
                     }
                     break
                 case "V":
-                    if(melody[index] == 1){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["b/3"], duration: element }))
+                    if (melody[index] == 1) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["b/3"], duration: element }))
                     }
-                    if(melody[index] == 3){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    if (melody[index] == 3) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["e/4"], duration: element }))
                     }
-                    if(melody[index] == 5){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["g/4"], duration: element }))
+                    if (melody[index] == 5) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["g/4"], duration: element }))
                     }
                     break
                 case "VI":
-                    if(melody[index] == 1){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: element }))
+                    if (melody[index] == 1) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["c/4"], duration: element }))
                     }
-                    if(melody[index] == 3){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["e/4"], duration: element }))
+                    if (melody[index] == 3) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["e/4"], duration: element }))
                     }
-                    if(melody[index] == 5){
-                        notes.push(new VF.StaveNote({clef: "treble", keys: ["a/4"], duration: element }))
+                    if (melody[index] == 5) {
+                        notes.push(new VF.StaveNote({ clef: "treble", keys: ["a/4"], duration: element }))
                     }
                     break
                 default:
-                    notes.push(new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
-            }     
+                    notes.push(new VF.StaveNote({ clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: element }))
+            }
 
         })
-        
+
         return notes
     }
 
-    handleCallback = (index)=>{
+    handleCallback = (index) => {
         this.setState(
-            {selectedIndex:index }
+            { selectedIndex: index }
         )
     }
 
-    handleRhythm = (index)=>{
+    handleRhythm = (index) => {
         var copySong = this.state.song
-        copySong.rhythms[this.state.chord]= index
+        copySong.rhythms[this.state.chord] = index
         this.setState(
-            {song:copySong }
+            { song: copySong }
         )
     }
 
-    handleMelody = (index)=>{
+    handleMelody = (index) => {
         var copySong = this.state.song
-        copySong.melody[this.state.chord]= index
+        copySong.melody[this.state.chord] = index
         this.setState(
-            {song:copySong }
+            { song: copySong }
         )
     }
 
-    handleTabUser = (index)=>{
-        
-        if(index == this.state.chord){
+    handleTabUser = (index) => {
+
+        if (index == this.state.chord) {
             this.setState(
-                {tabVisible:!this.state.tabVisible }
+                { tabVisible: !this.state.tabVisible }
             )
-        }else{
+        } else {
             this.setState(
-                {chord:index,
-                tabVisible:true }
+                {
+                    chord: index,
+                    tabVisible: true
+                }
             )
         }
-        
+
     }
-    
-    generateMidi = ()=>{
+
+    generateMidi = () => {
 
         var convertedMidi = convertMidi(this.state.midi)
-        this.setState({convertedMidi: convertedMidi})
+        this.setState({ convertedMidi: convertedMidi })
 
 
     }
-    render(){
-       
+    render() {
+
         const VF = Vex.Flow;
 
-        const {Accidental, StaveNote} = Vex.Flow;
+        const { Accidental, StaveNote } = Vex.Flow;
 
 
         const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
-        
+
 
         var harm = []
-        harmony.map( (part, index) => {
+        harmony.map((part, index) => {
             const rhythm = config.genders[0].rhythms[this.state.song.rhythms[index]].detail
-            const melody = config.genders[0].notes[this.state.song.melody[index]].detail 
-            harm.push(this.createNotes(part ,rhythm, melody ))
-        
+            const melody = config.genders[0].notes[this.state.song.melody[index]].detail
+            harm.push(this.createNotes(part, rhythm, melody))
+
         })
-            
-        
-        const list = ["I-IV-V-VI" , "I-V-VI-IV", "VI-IV-I-V ", "IV-I-V-VI " ]
-        
+
+
+        const list = ["I-IV-V-VI", "I-V-VI-IV", "VI-IV-I-V ", "IV-I-V-VI "]
+
         const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"]
 
         console.log("midi", harm)
         console.log("convertedMidi", this.state.convertedMidi)
         var firsMidiPentagramas = []
-        if(this.state.convertedMidi){
+        if (this.state.convertedMidi) {
             var midiIndex = 0
             for (let index = 0; index < 4; index++) {
                 var notasPentagrama = []
                 var tempoCompas = 0
-                while(tempoCompas < 4){
+                while (tempoCompas < 4) {
                     const note = this.createNote(this.state.convertedMidi[midiIndex])
                     notasPentagrama.push(note)
                     tempoCompas = tempoCompas + this.state.convertedMidi[midiIndex].relativeDuration
-                    midiIndex ++
+                    midiIndex++
                 }
                 firsMidiPentagramas.push(notasPentagrama)
             }
         }
-       
-        
-        return <div style={{width:'100%' , display:'flex', flexDirection:'column', flexWrap:'wrap'}}>
-            
-            
-            <Dropdown  
-                title="Estructura harmonica"
-                indexSelected= {this.state.selectedIndex}
-                list={list}
-                callback = {this.handleCallback}
-                
-            />
-           
-            <div style={{ width:'100%' , display: 'flex', justifyContent:'space-between' }}>
-            {harm.map( (c, i) =>{
-                const selected = this.state.chord == i && this.state.tabVisible
-                return <div onClick={()=>this.handleTabUser(i)} >  
-                    < Note chord={c} refname={i} selected={selected} /> 
-                    
-                </div>})}
-            </div>
-            
-            {this.state.tabVisible &&<TabBar callbackAccompaniment = {this.handleMelody} index={0} callbackRhythm={this.handleRhythm} 
-                        updateTabUser={this.handleTabUser}
-            ></TabBar> }
 
-            
-            {<button style={{marginTop:40}} onClick={() =>onPlay(harmony,this.state.song)}> play</button>}
+
+        return <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
+
+
+            <Dropdown
+                title="Estructura harmonica"
+                indexSelected={this.state.selectedIndex}
+                list={list}
+                callback={this.handleCallback}
+
+            />
+
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                {harm.map((c, i) => {
+                    const selected = this.state.chord == i && this.state.tabVisible
+                    return <div onClick={() => this.handleTabUser(i)} >
+                        < Note chord={c} refname={i} selected={selected} />
+
+                    </div>
+                })}
+            </div>
+
+            {this.state.tabVisible && <TabBar callbackAccompaniment={this.handleMelody} index={0} callbackRhythm={this.handleRhythm}
+                updateTabUser={this.handleTabUser}
+            ></TabBar>}
+
+
+            {<button style={{ marginTop: 40 }} onClick={() => onPlay(harmony, this.state.song)}> play</button>}
 
             <p>Play midi</p>
             <input
                 id="midi_input"
                 className="none"
                 type="file"
-               
+
             />
 
-            {<button style={{marginTop:40}} onClick={() =>onPlayMidi(this.state.midi)}> playMidi</button>}
+            {<button style={{ marginTop: 40 }} onClick={() => onPlayMidi(this.state.midi)}> playMidi</button>}
 
             <p>Convertir midi</p>
-            {<button style={{marginTop:40}} onClick={this.generateMidi}> a notació musical</button>}
+            {<button style={{ marginTop: 40 }} onClick={this.generateMidi}> a notació musical</button>}
 
-            {this.state.convertedMidi && firsMidiPentagramas.map((c,i)=>{
-               return < Note chord={c} refname={i} /> 
+            {this.state.convertedMidi && firsMidiPentagramas.map((c, i) => {
+                return < Note chord={c} refname={i} />
             })}
 
             <p>generar midi</p>
-            {<button style={{marginTop:40}} onClick={() =>writeMidi(harmony,this.state.song)}> generar</button>}
+            {<button style={{ marginTop: 40 }} onClick={() => writeMidi(harmony, this.state.song)}> generar</button>}
 
 
         </div>
 
     }
-    componentDidUpdate(prevState){
+    componentDidUpdate(prevState) {
         console.log("entra")
         const fileInput = document.getElementById('midi_input');
         console.log("file", fileInput)
         fileInput.onchange = (e) => {
             const selectedFile = fileInput.files[0];
             console.log(selectedFile);
-            this.setState({midi: selectedFile.path})
+            this.setState({ midi: selectedFile.path })
         }
     }
-   
+
 }

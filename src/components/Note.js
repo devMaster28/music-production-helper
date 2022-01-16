@@ -30,7 +30,6 @@ export default class Note extends Component {
         }
         
         const {chord} = this.props;
-        console.log("chord render", chord)
         const svgContainer = document.createElement('div');
         const renderer = new Renderer(svgContainer, Renderer.Backends.SVG);
         const ctx = renderer.getContext();
