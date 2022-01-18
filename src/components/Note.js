@@ -28,8 +28,9 @@ export default class Note extends Component {
                 parent.firstChild.remove()
             }
         }
-        
         const {chord} = this.props;
+        console.log("chord ",chord)
+
         const svgContainer = document.createElement('div');
         const renderer = new Renderer(svgContainer, Renderer.Backends.SVG);
         const ctx = renderer.getContext();

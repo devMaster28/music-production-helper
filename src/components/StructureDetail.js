@@ -362,10 +362,8 @@ export default class StructureDetail extends Component {
     }
 
     generateMidi = () => {
-
         var convertedMidi = convertMidi(this.state.midi)
         this.setState({ convertedMidi: convertedMidi })
-
 
     }
     render() {
