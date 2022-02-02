@@ -24,9 +24,7 @@ export default class MusicPlayer {
             "A5": "mp3Notes/a5.mp3",
         }).toDestination();
 
-    
-
-        //    const myMelody = createStructure(harmony,rhythm)
+            //const myMelody = createStructure(harmony,rhythm)
         const myMelody = Rhythm.mergeDurationsAndPitch(durations, notes);
         const part = new Tone.Part(function (time, value) {
             //the value is an object which contains both the note and the duration
@@ -72,7 +70,7 @@ export default class MusicPlayer {
             //the value is an object which contains both the note and the duration
             //sampler.triggerAttackRelease(value.notes, value.duration, time);
             sampler.triggerAttackRelease(value.pitch + "4", value.duration, time);
-        }, midi.tracks[1].notes)
+        }, midi.tracks[0].notes)
 
 
         Tone.loaded().then(() => {

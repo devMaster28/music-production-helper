@@ -369,12 +369,9 @@ export default class StructureDetail extends Component {
     render() {
 
         const VF = Vex.Flow;
-
         const { Accidental, StaveNote } = Vex.Flow;
-
-
+        
         const harmony = config.genders[0].harmony[this.state.selectedIndex].parts
-
 
         var harm = []
         harmony.map((part, index) => {

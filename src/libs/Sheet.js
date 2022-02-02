@@ -11,7 +11,9 @@ export default class Sheet{
         const midi = new Midi(midiData)
     
         const bpm = Math.round(midi.header.tempos[0].bpm)
-        const notes = midi.tracks[1].notes
+
+        console.log(midi)
+        const notes = midi.tracks[0].notes
     
         const STANDAR_DURATION = [4, 2, 1, 1 / 2, 1 / 4]
     
@@ -21,13 +23,16 @@ export default class Sheet{
             var closest = STANDAR_DURATION.reduce(function (prev, curr) {
                 return (Math.abs(curr - durationNote) < Math.abs(prev - durationNote) ? curr : prev);
             });
+            let octave =  note.octave < 3 ? 4: note.octave
             var myNote = {
-                name: note.pitch.toLowerCase() + "/" + note.octave,
+                name: note.pitch.toLowerCase() + "/" + octave,
                 duration: (1 / closest) * 4,
-                relativeDuration: closest
+                relativeDuration: closest,
+                bar: note.bars
             }
             result.push(myNote)
         })
+        console.log("convertMidi:" ,result)
         return result
     }
 
@@ -39,5 +44,6 @@ export default class Sheet{
         }
         return new VF.StaveNote({ clef: "treble", keys: [note.name], duration: "" + note.duration + "" })
     }
+
 
 }

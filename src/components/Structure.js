@@ -13,7 +13,6 @@ export default function Structure (){
     return<div style={{display:'flex', flexDirection:'column', width:'100%'}}>
         {obj.map(()=><Instrument></Instrument>)  
         }
-     <button onClick={()=>setCount(instrumnents +1)}> +</button>
     </div>
 
    
