@@ -4,6 +4,7 @@ import Vex from "vexflow";
 import Sheet from '../libs/Sheet';
 import MusicPlayer from '../libs/MusicPlayer';
 import { TabBar } from './TabBar';
+import * as Config from '../config.json'
 
 export default class Instrument extends Component {
 
@@ -17,11 +18,13 @@ export default class Instrument extends Component {
     }
 
     handleRhythm = (index) => {
-        var copySong = this.state.notes
-
-        copySong.rhythms[this.state.chord] = index
+        var copySong = this.state.notes.filter( note => note.bar == 0)
+        
+        console.log("C",copySong)
+        var selectedRhythm = Config.genders[0].rhythms[index].detail
+        var notes = Sheet.updateRhytmFromMidi(copySong, selectedRhythm)
         this.setState(
-            { notes: copySong }
+            { notes: notes }
         )
     }
 
@@ -56,13 +59,10 @@ export default class Instrument extends Component {
     
     generateNotes(){
         var notes = [[]]
-        console.log("ha petado aquí")
         var prenotes = this.state.notes
         for (let index = 0; index < prenotes.length; index++) {
             
             if(prenotes[index].bar < 2){
-                console.log(prenotes[index])
-                console.log("notes", notes)
                 const note = Sheet.createNote(prenotes[index])
                 if(typeof notes[prenotes[index].bar] == 'undefined'){
                     notes.push([])
@@ -79,7 +79,6 @@ export default class Instrument extends Component {
     
     render(){
         
-        console.log(this.state)
         const VF = Vex.Flow;
         const notes = this.state.notes? this.generateNotes():  [new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: "q" })]
         return<div style={{with: '100%' , borderColor:"#5bc0de", borderWidth:2, borderRadius:10, display:"flex", borderStyle:'solid'}}>

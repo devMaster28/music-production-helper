@@ -12,7 +12,6 @@ export default class Sheet{
     
         const bpm = Math.round(midi.header.tempos[0].bpm)
 
-        console.log(midi)
         const notes = midi.tracks[0].notes
     
         const STANDAR_DURATION = [4, 2, 1, 1 / 2, 1 / 4]
@@ -26,8 +25,8 @@ export default class Sheet{
             let octave =  note.octave < 3 ? 4: note.octave
             var myNote = {
                 name: note.pitch.toLowerCase() + "/" + octave,
-                duration: (1 / closest) * 4,
-                relativeDuration: closest,
+                duration: (1 / closest) * 4, //en el compas
+                relativeDuration: closest, //referencia a la negra
                 bar: note.bars
             }
             result.push(myNote)
@@ -45,5 +44,28 @@ export default class Sheet{
         return new VF.StaveNote({ clef: "treble", keys: [note.name], duration: "" + note.duration + "" })
     }
 
+    static updateRhytmFromMidi(notesMidi, rhythm){
 
+        var totalTempo= 0 ;
+        var rhythmIndex = 0
+        var notes = []
+
+        while (totalTempo < 4){
+            var relativeTempoCompas =  ( 1/ rhythm[rhythmIndex]) *4
+            console.log("relativeTempo" , notesMidi.length)
+            console.log("SDads", notesMidi[rhythmIndex % notesMidi.length].name)
+            var myNote= {
+                name: notesMidi[rhythmIndex % notesMidi.length].name,
+                duration: rhythm[rhythmIndex],
+                bar: notesMidi[rhythmIndex % notesMidi.length].bar               
+            }
+            console.log("myNote" , myNote)
+            notes.push (myNote)
+            
+            totalTempo = totalTempo +relativeTempoCompas
+            rhythmIndex ++
+        }
+
+        return notes
+    }
 }
