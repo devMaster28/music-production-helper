@@ -1,4 +1,7 @@
-
+/**
+ * A structure of a song : TO be implemented
+ * @returns 
+ */
 export default function SongStructure (){
 
     return <div style={{display: "flex", justifyContent:'space-around'}}>

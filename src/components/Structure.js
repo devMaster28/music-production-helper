@@ -1,6 +1,9 @@
 import Instrument from "./Instrument";
 import React, { useState } from 'react';
-
+/**
+ * Class Structure that contains the diferents intruments 
+ * @returns 
+ */
 export default function Structure (){
 
     const [instrumnents, setCount] = useState(1);

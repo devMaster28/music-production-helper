@@ -1,5 +1,8 @@
 import React from "react";
 
+/**
+ * DropDown of the general settigs of the project
+ */
 export class TitledDropDown extends React.Component{
 
     constructor(props){

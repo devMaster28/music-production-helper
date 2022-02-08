@@ -8,7 +8,10 @@ import * as Config from '../config.json'
 
 /**
  * 
+ *  Class that representes 1 instrument: 
  * 
+ *  - the compases of the harmonic roll
+ *  - Handle the diferents events 
  * 
  */
 export default class Instrument extends Component {
@@ -21,8 +24,14 @@ export default class Instrument extends Component {
             notes:null,
             inputMidi:null
         }
-    }
+    }   
+    
 
+    /**
+     *  NOT WORKING!!!
+     * 
+     * @param {int} index - Index of the compas that the harmony has to been updated
+     */
     handleHarmony = (index) => {
         var copySong = this.state.notes.filter( note => note.bar == 0)
         var selectedHarmony = Config.genders[0].harmony[index].parts[0]
@@ -33,6 +42,10 @@ export default class Instrument extends Component {
         )
     }
 
+    /**
+     * 
+     * @param {int} index - Index of the compass that rhytm has to been updated only works now for the 0
+     */
     handleRhythm = (index) => {
         var copySong = this.state.notes.filter( note => note.bar == 0)
         
@@ -43,6 +56,8 @@ export default class Instrument extends Component {
             { notes: notes }
         )
     }
+
+
 
     handleTabUser = (index) => {
 
@@ -61,6 +76,9 @@ export default class Instrument extends Component {
 
     }
 
+    /**
+     * Handle if the the user clicks the play/stop button
+     */
     handlePlayerClick = () => {
         if (!this.state.playing) {
           this.setState({playing: true})
@@ -72,7 +90,11 @@ export default class Instrument extends Component {
         }
       }
     
-    
+    /**
+     * Function that generate a [ [ Notes]]  4 compases of diferents notes each conpass. 
+     * Shold be improved 
+     * @returns 
+     */
     generateNotes(){
         var notes = [[]]
         var prenotes = this.state.notes
@@ -92,12 +114,24 @@ export default class Instrument extends Component {
         return notes
     }
       
+    /**
+     * handle changes of the input midi
+     * 
+     * @param {} e 
+     */
     onchangeinputMidi (e){
         console.log("target",e.target.value)
         this.setState({
             inputMidi: e.target.value
         })
     }
+
+    /**
+     * 
+     * Render the program
+     * 
+     * @returns 
+     */
     
     render(){
         console.log(this.state)
@@ -152,10 +186,17 @@ export default class Instrument extends Component {
             </div> 
         </div>
     }
+    /**
+     * Update for the first time the component
+     */
     componentDidMount(){
         this.forceUpdate()
     }
 
+    /**
+     * 
+     * @param {*} prevState 
+     */
     componentDidUpdate(prevState){
         const fileInput = document.getElementById('midi_input');
         fileInput.onchange = (e) => {
@@ -171,7 +212,11 @@ export default class Instrument extends Component {
     }
 }
 
-
+/**
+ * 
+ * @param {function} onPlayerClick Handler of the play button
+ * @returns  SVG representation of a play button
+ */
 const Play = ({onPlayerClick}) => {
     return (
         <svg className="button" viewBox="0 0 60 60" onClick={onPlayerClick} style={{with:'25', height:'25'}}>
@@ -180,6 +225,11 @@ const Play = ({onPlayerClick}) => {
     )
 }
 
+/**
+ * 
+ * @param {function} onPlayerClick Handler of the pause button
+ * @returns  SVG representation of a pause button
+ */
 const Pause = ({onPlayerClick}) => {
     return (
       <svg className="button" viewBox="0 0 60 60" onClick={onPlayerClick} style={{with:'25', height:'25'}}>

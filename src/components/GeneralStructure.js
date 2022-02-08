@@ -1,6 +1,10 @@
 import { Dropdown } from "./Dropdown";
 import { TitledDropDown } from "./TitledDropDown";
 
+/**
+ * General configurations of the Song
+ * @returns 
+ */
 export default function GeneralStructure (){
 
     function handleGenre(indexGenre){
