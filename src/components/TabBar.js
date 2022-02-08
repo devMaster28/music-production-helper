@@ -29,10 +29,9 @@ export class TabBar extends React.Component {
         for (var i = 0; i < 4; i++) {
             buttons.push(<button className='indent' key={i}>_</button>);
         }
-        const titleacompanamiento = ["acompañamiento 1", "acompañamiento 2"]
+        const titleacompanamiento = ["Harmonia 1", "Harmonia 2", "Harmonia 3","Harmonia 4"]
 
       const titleRhythm = ["Ritmo 1", "Ritmo 2", "ritmo 3", "ritmo 4"] 
-      const titleMelody = ["Melodia 1", "Ritmo 2", "ritmo 3", "ritmo 4"] 
       return(
         <div className="tabs">
          <Tabs >
@@ -61,7 +60,7 @@ export class TabBar extends React.Component {
             </div>
            
            </Tab>
-           <Tab label="Notas">
+           <Tab label="Harmonia">
              {<div>
                 <div style={{ display:'flex', flexDirection:'column' , marginLeft:20}}> 
                   {titleacompanamiento.map((item,index) => (

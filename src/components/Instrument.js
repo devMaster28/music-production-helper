@@ -6,6 +6,11 @@ import MusicPlayer from '../libs/MusicPlayer';
 import { TabBar } from './TabBar';
 import * as Config from '../config.json'
 
+/**
+ * 
+ * 
+ * 
+ */
 export default class Instrument extends Component {
 
     constructor(props){
@@ -13,8 +18,19 @@ export default class Instrument extends Component {
         this.state = {
             playing: false,
             isMidi:false,
-            notes:null
+            notes:null,
+            inputMidi:null
         }
+    }
+
+    handleHarmony = (index) => {
+        var copySong = this.state.notes.filter( note => note.bar == 0)
+        var selectedHarmony = Config.genders[0].harmony[index].parts[0]
+        var midiHarmony = this.state.inputMidi.split(":")[1].split("-")[0]
+        var notes = Sheet.updateHarmonyFromMidi(copySong, midiHarmony ,selectedHarmony)
+        this.setState(
+            { notes: notes }
+        )
     }
 
     handleRhythm = (index) => {
@@ -76,9 +92,15 @@ export default class Instrument extends Component {
         return notes
     }
       
+    onchangeinputMidi (e){
+        console.log("target",e.target.value)
+        this.setState({
+            inputMidi: e.target.value
+        })
+    }
     
     render(){
-        
+        console.log(this.state)
         const VF = Vex.Flow;
         const notes = this.state.notes? this.generateNotes():  [new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: "q" })]
         return<div style={{with: '100%' , borderColor:"#5bc0de", borderWidth:2, borderRadius:10, display:"flex", borderStyle:'solid'}}>
@@ -104,6 +126,7 @@ export default class Instrument extends Component {
                                 id="midi_Chord"
                                 className="none"
                                 type="text"
+                                onChange={(e)=>this.onchangeinputMidi(e)}
                                 />
                         </div>
                         
@@ -123,7 +146,7 @@ export default class Instrument extends Component {
                   
                 </div>
                        
-                {this.state.tabVisible && <TabBar callbackAccompaniment={this.handleMelody} index={0} callbackRhythm={this.handleRhythm}
+                {this.state.tabVisible && <TabBar callbackAccompaniment={this.handleHarmony} index={0} callbackRhythm={this.handleRhythm}
                         updateTabUser={this.handleTabUser}
                     ></TabBar>}
             </div> 
@@ -141,6 +164,10 @@ export default class Instrument extends Component {
             let convertedMidi = Sheet.convertMidi(selectedFile.path)
             this.setState({ midi: selectedFile.path , isMidi:true, notes:convertedMidi})
         }
+
+        const txtMidi = document.getElementById('midi_Chord');
+
+        
     }
 }
 
